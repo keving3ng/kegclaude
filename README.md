@@ -16,7 +16,7 @@ Custom status line shown at bottom-left of the Claude Code input box.
 ### Output format
 
 ```
-sonnet-4-6 | main | [███░░░] 50% | $0.12
+sonnet-4-6 | main | [███░░░] 50% | 12.3k/1.2k/45.6k/8.9k | $0.05 | 5h:13% | wk:20%
 ```
 
 | Segment | Source | Notes |
@@ -25,8 +25,10 @@ sonnet-4-6 | main | [███░░░] 50% | $0.12
 | Git branch | `workspace.current_dir` + `git symbolic-ref` | Hidden when not a git repo |
 | Agent/style | `agent.name` or `output_style.name` | Hidden when value is "default" |
 | Context bar | `context_window.used_percentage` | 6-block `█░` bar + percentage |
+| Tokens | `total_input_tokens` / `total_output_tokens` / `total_cache_read_tokens` / `total_cache_write_tokens` | Format: `in/out/cache-read/cache-write` |
 | Cost estimate | `total_input_tokens` + `total_output_tokens` | Rough estimate at Sonnet pricing ($3/$15/M) |
-| Rate limit | `rate_limits.five_hour.used_percentage` | Claude.ai subscribers only |
+| 5h rate limit | `rate_limits.five_hour.used_percentage` | Claude.ai subscribers only |
+| Weekly rate limit | `rate_limits.seven_day.used_percentage` | Claude.ai subscribers only |
 
 ### What's not available
 
