@@ -74,6 +74,14 @@ Returns a `permissionDecision: "deny"` with a message to run manually if intende
 
 **2. Bash audit log** — appends every command to `~/.claude/bash-history.log` with a timestamp. Runs async so it never blocks.
 
+### PostToolUse (Write|Edit) — auto-format
+
+After every file write or edit, if the file is a JS/TS variant (`js/ts/jsx/tsx/mjs/cjs`), runs:
+```bash
+biome format --write <file>
+```
+Silently no-ops on errors so it never blocks. Respects `biome.json` if present in the project.
+
 ### PreCompact hook — context preservation prompt
 
 Before auto-compact fires, injects a system message reminding Claude to preserve:
@@ -89,8 +97,6 @@ Before auto-compact fires, injects a system message reminding Claude to preserve
 | Plugin | Purpose |
 |---|---|
 | `discord` | Discord bot integration — reply in channels from Claude |
-| `frontend-design` | High-quality UI component generation |
-| `superpowers` | Skill system (brainstorming, TDD, planning, debugging, etc.) |
 | `code-review` | PR code review agent |
 | `github` | GitHub issue/PR tools |
 | `typescript-lsp` | TypeScript language server tools |
@@ -99,7 +105,6 @@ Before auto-compact fires, injects a system message reminding Claude to preserve
 | `claude-md-management` | Audit and improve CLAUDE.md files |
 | `skill-creator` | Create and iterate on custom skills |
 | `security-guidance` | Security review guidance |
-| `commit-commands` | Git commit/push/PR workflow skills |
 | `claude-code-setup` | Automation recommendations |
 
 ---
@@ -132,21 +137,43 @@ Flow: create GitHub issue tagged `@claude` → bot opens PR → CI smoke test �
 
 Don't use for vball-tracker-specific logic.
 
+### `standup`
+
+Trigger: `/standup` — summarize recent work across the current repo or a directory of repos.
+
+Logic:
+- Runs `git log --since=1.week.ago -n 30 --oneline --no-merges`
+- Falls back to `git log -n 30` if repo is dormant (no commits in past week)
+- Groups commits by theme, synthesizes into bullet points per repo
+- Ends with a one-sentence current state for each repo
+
+---
+
+## MCP Servers (`~/.claude/settings.json`)
+
+| Server | Package | Purpose |
+|---|---|---|
+| `sequential-thinking` | `@modelcontextprotocol/server-sequential-thinking` | Structured scratchpad for complex multi-step reasoning |
+| `playwright` | `@playwright/mcp` | Real browser automation — navigate, click, screenshot |
+
+Both use `npx -y` and download on first use. No separate install required.
+
 ---
 
 ## Global Context (`~/.claude/CLAUDE.md`)
 
-A global `CLAUDE.md` is loaded by Claude Code in every session, regardless of project. It imports `tools.md` via `@tools.md`.
+A global `CLAUDE.md` is loaded by Claude Code in every session, regardless of project. It imports `tools.md` and `conventions.md`.
 
 **How propagation works:**
 
 ```
-~/.claude/CLAUDE.md  →  @tools.md  →  ~/.claude/tools.md (symlink)  →  kegclaude/tools.md
+~/.claude/CLAUDE.md  →  @tools.md       →  ~/.claude/tools.md (symlink)       →  kegclaude/tools.md
+                    →  @conventions.md  →  ~/.claude/conventions.md (symlink)  →  kegclaude/conventions.md
 ```
 
-Edit `kegclaude/tools.md` and every future session everywhere picks it up automatically — no per-project setup needed.
+Edit either source file in kegclaude and every future session picks it up automatically.
 
-Per-project CLAUDE.md files should only contain project-specific overrides (e.g. preferred lint script, project conventions).
+Per-project CLAUDE.md files should only contain project-specific overrides.
 
 ---
 
@@ -230,7 +257,10 @@ Key facts Claude carries across sessions (stored in `~/.claude/projects/*/memory
 | `~/.claude/bash-history.log` | Audit log of all Bash commands |
 | `~/.claude/skills/deploy-to-jonas/` | Deploy to Jonas skill |
 | `~/.claude/skills/request-partiful-api-change/` | Partiful API change request skill |
+| `~/.claude/skills/standup/` | Standup summary skill |
 | `~/.claude/projects/*/memory/` | Per-project persistent memories |
-| `~/.claude/CLAUDE.md` | Global instructions loaded in every session; imports `tools.md` |
+| `~/.claude/CLAUDE.md` | Global instructions loaded in every session; imports `tools.md` + `conventions.md` |
 | `~/.claude/tools.md` | Symlink → `kegclaude/tools.md` |
+| `~/.claude/conventions.md` | Symlink → `kegclaude/conventions.md` |
 | `kegclaude/tools.md` | Source of truth for installed CLI tools and usage notes |
+| `kegclaude/conventions.md` | Source of truth for coding conventions |
