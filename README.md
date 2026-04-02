@@ -134,6 +134,48 @@ Don't use for vball-tracker-specific logic.
 
 ---
 
+## Global Context (`~/.claude/CLAUDE.md`)
+
+A global `CLAUDE.md` is loaded by Claude Code in every session, regardless of project. It imports `tools.md` via `@tools.md`.
+
+**How propagation works:**
+
+```
+~/.claude/CLAUDE.md  →  @tools.md  →  ~/.claude/tools.md (symlink)  →  kegclaude/tools.md
+```
+
+Edit `kegclaude/tools.md` and every future session everywhere picks it up automatically — no per-project setup needed.
+
+Per-project CLAUDE.md files should only contain project-specific overrides (e.g. preferred lint script, project conventions).
+
+---
+
+## CLI Tools (`tools.md`)
+
+Documented in `tools.md` (source of truth). Symlinked to `~/.claude/tools.md` and imported globally.
+
+**Install:**
+```bash
+brew install ast-grep difftastic shellcheck sd scc yq hyperfine watchexec git-delta fd
+```
+
+| Tool | Replaces / Purpose |
+|---|---|
+| `ast-grep` (`sg`) | Structural code search/replace by AST pattern |
+| `sd` | `sed` — PCRE regex, no escaping |
+| `fd` | `find` — gitignore-aware, saner syntax |
+| `yq` | `jq` for YAML/TOML/XML |
+| `shellcheck` | Static analysis for generated shell scripts |
+| `scc` | Codebase overview (LOC, language breakdown) |
+| `difftastic` | Structural diff by AST (human-facing) |
+| `delta` | Syntax-highlighted git diff pager (human-facing) |
+| `hyperfine` | Statistical benchmarking |
+| `watchexec` | File watcher for dev loops |
+
+Already installed: `jq`, `gh`. Skipped: `comby` (deprecated).
+
+---
+
 ## Other Global Settings
 
 | Setting | Value | Notes |
@@ -189,3 +231,6 @@ Key facts Claude carries across sessions (stored in `~/.claude/projects/*/memory
 | `~/.claude/skills/deploy-to-jonas/` | Deploy to Jonas skill |
 | `~/.claude/skills/request-partiful-api-change/` | Partiful API change request skill |
 | `~/.claude/projects/*/memory/` | Per-project persistent memories |
+| `~/.claude/CLAUDE.md` | Global instructions loaded in every session; imports `tools.md` |
+| `~/.claude/tools.md` | Symlink → `kegclaude/tools.md` |
+| `kegclaude/tools.md` | Source of truth for installed CLI tools and usage notes |
