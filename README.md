@@ -210,7 +210,7 @@ Already installed: `jq`, `gh`. Skipped: `comby` (deprecated).
 | `alwaysThinkingEnabled` | `true` | Extended thinking on by default |
 | `voiceEnabled` | `true` | Hold-to-talk voice dictation |
 | `skipDangerousModePermissionPrompt` | `true` | Already accepted the bypass prompt |
-| `permissions.allow` | `["Bash(chmod:*)"]` | Allow chmod without prompting |
+| `permissions.allow` | `["Bash(chmod:*)"]` | Allow chmod without prompting — set in `settings.local.json`, not tracked in repo |
 
 ---
 
