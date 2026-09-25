@@ -6,6 +6,22 @@ All the live config lives in `~/.claude/`. This repo documents what's set up, wh
 
 ---
 
+## `~/code` Workspace Router
+
+`workspace-router.md` is the shared routing guide for agents started from the `~/code` workspace root. The root-level `AGENTS.md` and `CLAUDE.md` are symlinks to this tracked source, so Codex and Claude Code use the same project map and routing rules.
+
+Recreate the links after cloning this repo:
+
+```bash
+cd ~/code
+ln -s kegclaude/workspace-router.md AGENTS.md
+ln -s kegclaude/workspace-router.md CLAUDE.md
+```
+
+The router points agents to `wiki/` for project context, then to each repository's own instructions for implementation details.
+
+---
+
 ## Status Line
 
 Custom status line shown at bottom-left of the Claude Code input box.
